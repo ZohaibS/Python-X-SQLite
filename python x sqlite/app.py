@@ -66,15 +66,31 @@ def tobs():
 
     return jsonify(all_temp)
 
-# @app.route("/api/v1.0/<start>")
-# def start_temp(start):
-#     results = session.query(Precipitation).filter(Precipitation.date >= start).all()
+@app.route("/api/v1.0/<start>")
+def start_temp(start):
+    results = session.query(Precipitation.tobs).filter(Precipitation.date >= start).all()
 
-#     all_temp = []
-#     for temp in results:
-#         temp_dict = {}
-#         temp_dict["date"] = temp.date
-#         temp_dict["min_temp"] = func.min(temp.tobs)
-#         temp_dict["avg_temp"] = func.avg(temp.tobs)
-#         temp_dict["max_temp"] = func.max(temp.tobs)
-#     all_temp.append(temp_dict)
+    list_of_temp = []
+    for i in results:
+        list_of_temp.append(i[0])
+
+    temp_dict = {}
+    temp_dict["min_temp"] = min(list_of_temp)
+    temp_dict["avg_temp"] = sum(list_of_temp)/len(list_of_temp)
+    temp_dict["max_temp"] = max(list_of_temp)
+    return jsonify(temp_dict)    
+
+@app.route("/api/v1.0/<start>/<end>")
+def start_end_temp(start, end):
+    results = session.query(Precipitation.tobs).filter(Precipitation.date >= start).filter(Precipitation.date <= end).all()
+
+    list_of_temp = []
+    for i in results:
+        list_of_temp.append(i[0])
+
+    temp_dict = {}
+    temp_dict["min_temp"] = min(list_of_temp)
+    temp_dict["avg_temp"] = round(sum(list_of_temp)/len(list_of_temp), 1)
+    temp_dict["max_temp"] = max(list_of_temp)
+    return jsonify(temp_dict)    
+
